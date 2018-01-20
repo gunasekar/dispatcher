@@ -1,4 +1,4 @@
-package logic
+package awssqs
 
 import (
 	"encoding/json"
@@ -7,23 +7,25 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/dispatcher"
+	"gitlab.com/dispatcher/sample/job"
 )
 
 // TestJobConsumer ...
 type TestJobConsumer struct {
-	Values chan int
+	SqsClient *sqs.SQS
+	QueueURL  string
 }
 
 // Consume ...
 func (jc *TestJobConsumer) Consume() dispatcher.Job {
-	result, err := SqsClient.ReceiveMessage(&sqs.ReceiveMessageInput{
+	result, err := jc.SqsClient.ReceiveMessage(&sqs.ReceiveMessageInput{
 		AttributeNames: []*string{
 			aws.String(sqs.MessageSystemAttributeNameSentTimestamp),
 		},
 		MessageAttributeNames: []*string{
 			aws.String(sqs.QueueAttributeNameAll),
 		},
-		QueueUrl:            &QueueURL,
+		QueueUrl:            &jc.QueueURL,
 		MaxNumberOfMessages: aws.Int64(1),
 		VisibilityTimeout:   aws.Int64(36000),
 		WaitTimeSeconds:     aws.Int64(20),
@@ -39,7 +41,7 @@ func (jc *TestJobConsumer) Consume() dispatcher.Job {
 		return nil
 	}
 
-	job := &MyJob{}
+	job := &job.MyJob{}
 	json.Unmarshal([]byte(*result.Messages[0].Body), job)
 	return job
 }

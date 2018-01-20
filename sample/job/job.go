@@ -1,4 +1,4 @@
-package logic
+package job
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var module = log.Fields{"module": "test_job"}
+var module = log.Fields{"module": "my_job"}
 
 // MyJob ...
 type MyJob struct {
@@ -24,7 +24,7 @@ func (j *MyJob) GetJobID() string {
 func (j *MyJob) DoJob() []error {
 	log.WithFields(module).Infof("My Job %v Started", j.JobID)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	log.WithFields(module).Infof("X[%v]+Y[%v]=%v", j.X, j.Y, (j.X + j.Y))
 
 	log.WithFields(module).Infof("My Job %v Completed", j.JobID)
