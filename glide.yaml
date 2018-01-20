@@ -1,0 +1,16 @@
+package: gitlab.com/dispatcher
+import:
+- package: github.com/satori/go.uuid
+  version: ^1.2.0
+- package: github.com/sirupsen/logrus
+  version: ^1.0.4
+- package: github.com/aws/aws-sdk-go
+  version: ^1.12.66
+  subpackages:
+  - aws
+  - service/sqs
+testImport:
+- package: github.com/smartystreets/goconvey
+  version: ^1.6.3
+  subpackages:
+  - convey
