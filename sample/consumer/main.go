@@ -5,6 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"gitlab.com/dispatcher"
@@ -13,12 +16,19 @@ import (
 
 func main() {
 	// Create SQS client
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
+	sess := session.Must(session.NewSession(&aws.Config{
+		Credentials:      credentials.NewStaticCredentials("foo", "bar", ""),
+		S3ForcePathStyle: aws.Bool(true),
+		Region:           aws.String(endpoints.UsWest2RegionID),
+		Endpoint:         aws.String("http://localhost:4576"),
 	}))
 
+	// sess := session.Must(session.NewSessionWithOptions(session.Options{
+	// 	SharedConfigState: session.SharedConfigEnable,
+	// }))
+
 	sqsClient := sqs.New(sess)
-	queueURL := "https://sqs.ap-southeast-1.amazonaws.com/903916081954/test-q"
+	queueURL := "http://localhost:4576/queue/localq"
 
 	// Create the object which defines to the consume logic
 	var jobConsumer dispatcher.JobConsumer

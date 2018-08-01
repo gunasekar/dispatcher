@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	uuid "github.com/satori/go.uuid"
@@ -18,11 +20,19 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 
 	// Configure Queue
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
+	sess := session.Must(session.NewSession(&aws.Config{
+		Credentials:      credentials.NewStaticCredentials("foo", "var", ""),
+		S3ForcePathStyle: aws.Bool(true),
+		Region:           aws.String(endpoints.UsWest2RegionID),
+		Endpoint:         aws.String("http://localhost:4576"),
 	}))
+
+	// sess := session.Must(session.NewSessionWithOptions(session.Options{
+	// 	SharedConfigState: session.SharedConfigEnable,
+	// }))
+
 	sqsClient := sqs.New(sess)
-	queueURL := "https://sqs.ap-southeast-1.amazonaws.com/903916081954/test-q"
+	queueURL := "http://localhost:4576/queue/localq"
 
 	// Start producing messages
 	for i := 0; i < 50; i++ {
