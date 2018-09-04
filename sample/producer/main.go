@@ -10,9 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/gunasekar/dispatcher/sample/job"
 	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/dispatcher/sample/job"
 )
 
 func main() {

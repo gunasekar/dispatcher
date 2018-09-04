@@ -10,8 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"gitlab.com/dispatcher"
-	"gitlab.com/dispatcher/sample/consumer/awssqs"
+	"github.com/gunasekar/dispatcher"
+	"github.com/gunasekar/dispatcher/sample/consumer/awssqs"
 )
 
 func main() {

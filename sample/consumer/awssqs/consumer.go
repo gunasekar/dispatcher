@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/gunasekar/dispatcher"
+	"github.com/gunasekar/dispatcher/sample/job"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/dispatcher"
-	"gitlab.com/dispatcher/sample/job"
 )
 
 // TestJobConsumer ...

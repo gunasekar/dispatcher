@@ -1,4 +1,4 @@
-package: gitlab.com/dispatcher
+package: github.com/gunasekar/dispatcher
 import:
 - package: github.com/satori/go.uuid
   version: ^1.2.0
