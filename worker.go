@@ -2,6 +2,7 @@ package dispatcher
 
 import (
 	"runtime/debug"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -48,7 +49,20 @@ func (w *Worker) Start() {
 			case job := <-w.JobChannel:
 				// we have received a work request.
 				log.WithFields(module).Debugf("%v: Received a job", w.WorkerID)
-				w.executeJob(job)
+
+				ch := make(chan bool, 1)
+				go func() {
+					w.executeJob(job)
+					ch <- true
+				}()
+
+				select {
+				case <-ch:
+					log.WithFields(module).Debugf("%v: Job completed", w.WorkerID)
+				case <-time.After(job.GetTimeout()):
+					log.WithFields(module).Errorf("%v: Job execution timed out after %f seconds", w.WorkerID, job.GetTimeout().Seconds())
+				}
+
 			case <-w.shutdown:
 				// we have received a signal to stop
 				log.WithFields(module).Debugf("%v: Quitting the worker", w.WorkerID)

@@ -36,7 +36,7 @@ func main() {
 		QueueURL: queueURL}
 
 	// Create and start the dispatcher
-	dispatcher := dispatcher.NewGlobalDispatcher("test-dispatcher", 5, jobConsumer, 3)
+	dispatcher := dispatcher.NewGlobalDispatcher("test-dispatcher", 1, jobConsumer, 1)
 	dispatcher.Run()
 
 	// wait for syscall.SIGINT or syscall.SIGTERM and shutdown the dispatcher

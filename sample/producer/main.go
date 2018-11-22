@@ -35,7 +35,7 @@ func main() {
 	queueURL := "http://localhost:4576/queue/localq"
 
 	// Start producing messages
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 5; i++ {
 		job := &job.MyJob{JobID: uuid.NewV4().String(), X: i + 1, Y: i + 2}
 		jobContent, _ := json.Marshal(job)
 		sqsClient.SendMessage(&sqs.SendMessageInput{

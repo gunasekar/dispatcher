@@ -1,5 +1,7 @@
 package dispatcher
 
+import "time"
+
 // Dispatcher ...
 type Dispatcher interface {
 	GetName() string
@@ -13,6 +15,7 @@ type Dispatcher interface {
 type Job interface {
 	GetJobID() string
 	DoJob() []error
+	GetTimeout() time.Duration
 }
 
 // JobConsumer ...

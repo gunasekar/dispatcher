@@ -18,6 +18,10 @@ func (j *TestJob) GetJobID() string {
 	return j.JobID
 }
 
+func (j *TestJob) GetTimeout() time.Duration {
+	return 10 * time.Second
+}
+
 func (j *TestJob) DoJob() []error {
 	var errs []error
 
