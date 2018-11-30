@@ -27,7 +27,7 @@ func (jc *TestJobConsumer) Consume() dispatcher.Job {
 		},
 		QueueUrl:            &jc.QueueURL,
 		MaxNumberOfMessages: aws.Int64(1),
-		VisibilityTimeout:   aws.Int64(36000),
+		VisibilityTimeout:   aws.Int64(10),
 		WaitTimeSeconds:     aws.Int64(20),
 	})
 
@@ -43,5 +43,6 @@ func (jc *TestJobConsumer) Consume() dispatcher.Job {
 
 	job := &job.MyJob{}
 	json.Unmarshal([]byte(*result.Messages[0].Body), job)
+	job.ReceiptHandle = *result.Messages[0].ReceiptHandle
 	return job
 }

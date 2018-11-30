@@ -18,6 +18,7 @@ import (
 func main() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.DebugLevel)
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 
 	// Configure Queue
 	sess := session.Must(session.NewSession(&aws.Config{
@@ -26,10 +27,6 @@ func main() {
 		Region:           aws.String(endpoints.UsWest2RegionID),
 		Endpoint:         aws.String("http://localhost:4576"),
 	}))
-
-	// sess := session.Must(session.NewSessionWithOptions(session.Options{
-	// 	SharedConfigState: session.SharedConfigEnable,
-	// }))
 
 	sqsClient := sqs.New(sess)
 	queueURL := "http://localhost:4576/queue/localq"

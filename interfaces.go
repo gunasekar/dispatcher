@@ -14,8 +14,10 @@ type Dispatcher interface {
 // Job ...
 type Job interface {
 	GetJobID() string
-	DoJob() []error
-	GetTimeout() time.Duration
+	Execute() []error
+	GetExecutionTimeout() time.Duration
+	Finally()
+	GetFinallyTimeout() time.Duration
 }
 
 // JobConsumer ...

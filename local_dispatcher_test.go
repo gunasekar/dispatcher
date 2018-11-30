@@ -18,11 +18,7 @@ func (j *TestJob) GetJobID() string {
 	return j.JobID
 }
 
-func (j *TestJob) GetTimeout() time.Duration {
-	return 10 * time.Second
-}
-
-func (j *TestJob) DoJob() []error {
+func (j *TestJob) Execute() []error {
 	var errs []error
 
 	if j.JobID == "-1" {
@@ -42,6 +38,18 @@ func (j *TestJob) DoJob() []error {
 	log.WithFields(module).Debugf("Test Job %v Completed", j.JobID)
 
 	return nil
+}
+
+func (j *TestJob) GetExecutionTimeout() time.Duration {
+	return 10 * time.Second
+}
+
+func (j *TestJob) Finally() {
+	log.WithFields(module).Debugf("Running finally")
+}
+
+func (j *TestJob) GetFinallyTimeout() time.Duration {
+	return 1 * time.Second
 }
 
 func Test_LocalDispatcher_SunnyDay(t *testing.T) {

@@ -49,20 +49,8 @@ func (w *Worker) Start() {
 			case job := <-w.JobChannel:
 				// we have received a work request.
 				log.WithFields(module).Debugf("%v: Received a job", w.WorkerID)
-
-				ch := make(chan bool, 1)
-				go func() {
-					w.executeJob(job)
-					ch <- true
-				}()
-
-				select {
-				case <-ch:
-					log.WithFields(module).Debugf("%v: Job completed", w.WorkerID)
-				case <-time.After(job.GetTimeout()):
-					log.WithFields(module).Errorf("%v: Job execution timed out after %f seconds", w.WorkerID, job.GetTimeout().Seconds())
-				}
-
+				w.executeJob(job)
+				w.executeFinally(job)
 			case <-w.shutdown:
 				// we have received a signal to stop
 				log.WithFields(module).Debugf("%v: Quitting the worker", w.WorkerID)
@@ -83,18 +71,58 @@ func (w *Worker) Stop() {
 }
 
 func (w *Worker) executeJob(job Job) {
-	defer func() {
-		if e := recover(); e != nil {
-			log.WithFields(module).Errorf("%v: Job execution failure: %s", w.WorkerID, debug.Stack())
+	ch := make(chan bool, 1)
+	go func() {
+		defer func() {
+			if e := recover(); e != nil {
+				log.WithFields(module).Errorf("%v: Job execution failure: %v.\nstack_trace: %s", w.WorkerID, e, debug.Stack())
+			}
+			ch <- true
+		}()
+
+		if errors := job.Execute(); errors != nil && (len(errors) > 0) {
+			log.WithFields(module).Debugf(w.WorkerID, "Worker %v: Error/s in doing the job. Job Object: %v", w.WorkerID, job)
+			for i := range errors {
+				if errors[i] != nil {
+					log.WithFields(module).Errorf("%v: Error  %v: %v", w.WorkerID, i, errors[i].Error())
+				}
+			}
 		}
 	}()
 
-	if errors := job.DoJob(); errors != nil && (len(errors) > 0) {
-		log.WithFields(module).Debugf(w.WorkerID, "Worker %v: Error/s in doing the job. Job Object: %v", w.WorkerID, job)
-		for i := range errors {
-			if errors[i] != nil {
-				log.WithFields(module).Errorf("%v: Error  %v: %v", w.WorkerID, i, errors[i].Error())
-			}
+	if job.GetExecutionTimeout() > 0 {
+		select {
+		case <-ch:
+			// log.WithFields(module).Debugf("%v: Job completed", w.WorkerID)
+		case <-time.After(job.GetExecutionTimeout()):
+			log.WithFields(module).Errorf("%v: Job execution timed out after %f seconds", w.WorkerID, job.GetExecutionTimeout().Seconds())
 		}
+	} else {
+		<-ch
+	}
+}
+
+func (w *Worker) executeFinally(job Job) {
+	ch := make(chan bool, 1)
+	go func() {
+		defer func() {
+			if e := recover(); e != nil {
+				log.WithFields(module).Errorf("%v: Job's finally execution failure: %v.\nstack_trace: %s", w.WorkerID, e, debug.Stack())
+			}
+			ch <- true
+		}()
+
+		job.Finally()
+	}()
+
+	if job.GetFinallyTimeout() > 0 {
+		select {
+		case <-ch:
+			// log.WithFields(module).Debugf("%v: Job's finally completed", w.WorkerID)
+		case <-time.After(job.GetFinallyTimeout()):
+			log.WithFields(module).Errorf("%v: Job's finally execution timed out after %f seconds", w.WorkerID, job.GetFinallyTimeout().Seconds())
+		}
+	} else {
+		<-ch
 	}
 }
