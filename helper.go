@@ -4,14 +4,14 @@ import (
 	"strconv"
 	"strings"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 )
 
 var module = log.Fields{"module": "dispatcher"}
 
 func newUUID() string {
-	return strings.Replace(uuid.NewV4().String(), "-", "", 4)
+	return strings.Replace(uuid.New().String(), "-", "", 4)
 }
 
 func run(d Dispatcher, maxWorkers int, workerPool chan chan Job) {

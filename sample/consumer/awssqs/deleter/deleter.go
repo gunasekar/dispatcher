@@ -1,11 +1,9 @@
 package deleter
 
 import (
-	"context"
-
-	"bitbucket.org/dreamplug-backend/commons-go/logger"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	log "github.com/sirupsen/logrus"
 )
 
 // SQSJobDeleter ...
@@ -26,8 +24,8 @@ func (d *JobDeleter) DeleteMessage(receiptHandle string) {
 
 	deleteMsgOutput, err := d.SqsClient.DeleteMessage(params)
 	if err != nil {
-		logger.Errorf(context.Background(), "Delete message failed for receiptHandle - "+receiptHandle)
+		log.Errorf("Delete message failed for receiptHandle - " + receiptHandle)
 	}
 
-	logger.Debugf(context.Background(), "DeletedOutput: %v", deleteMsgOutput.GoString())
+	log.Debugf("DeletedOutput: %v", deleteMsgOutput.GoString())
 }

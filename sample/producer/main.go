@@ -10,8 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/google/uuid"
 	"github.com/gunasekar/dispatcher/sample/job"
-	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -33,7 +33,7 @@ func main() {
 
 	// Start producing messages
 	for i := 0; i < 5; i++ {
-		job := &job.MyJob{JobID: uuid.NewV4().String(), X: i + 1, Y: i + 2}
+		job := &job.MyJob{JobID: uuid.New().String(), X: i + 1, Y: i + 2}
 		jobContent, _ := json.Marshal(job)
 		sqsClient.SendMessage(&sqs.SendMessageInput{
 			DelaySeconds: aws.Int64(10),

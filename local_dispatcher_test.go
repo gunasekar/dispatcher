@@ -52,6 +52,28 @@ func (j *TestJob) GetFinallyTimeout() time.Duration {
 	return 1 * time.Second
 }
 
+func Test_LocalDispatcher_SunnyDay_InjectedJob(t *testing.T) {
+	convey.Convey("Testing Local dispatcher's sunny day scenario", t, func() {
+		convey.So(func() {
+			jobQueue := make(chan Job, 10)
+			dispatcher := NewLocalDispatcher("testLD", 1, jobQueue)
+			dispatcher.Run()
+
+			for i := 0; i < 3; i++ {
+				jobQueue <- NewJob(func() {
+					log.WithFields(module).Debugf("Injected Job %v Started", i)
+					time.Sleep(2 * time.Second)
+					log.WithFields(module).Debugf("Injected Job %v Completed", i)
+				}, 10, 1)
+				log.WithFields(module).Debugf("Queued Job %v", i)
+				time.Sleep(1 * time.Second)
+			}
+
+			<-dispatcher.Shutdown()
+		}, convey.ShouldNotPanic)
+	})
+}
+
 func Test_LocalDispatcher_SunnyDay(t *testing.T) {
 	convey.Convey("Testing Local dispatcher's sunny day scenario", t, func() {
 		convey.So(func() {

@@ -13,6 +13,7 @@ type LocalDispatcher struct {
 	WorkerPool      chan chan Job
 	MaxWorkers      int
 	JobQueue        chan Job
+	EnableDebugLogs bool
 	workers         []*Worker
 	shutdown        chan bool
 	confirmShutdown chan bool
